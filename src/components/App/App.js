@@ -20,7 +20,18 @@ class App extends Component {
     error: null,
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    const { images } = this.state;
+    if (prevState.images !== images) {
+      const { scrollHeight, scrollTop, offsetHeight } = document.body;
+      const distanceFromBottom = scrollHeight - (scrollTop + offsetHeight);
+      return { shouldScroll: distanceFromBottom < 150 };
+    }
+
+    return null;
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
     const { keyWord } = this.state;
     if (prevState.keyWord !== keyWord) {
       /* eslint-disable-next-line */
@@ -29,10 +40,13 @@ class App extends Component {
       });
       this.fetchImages();
     }
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: 'smooth',
-    });
+
+    if (snapshot && snapshot.shouldScroll) {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   }
 
   onSearch = query => {
@@ -77,7 +91,6 @@ class App extends Component {
     return (
       <div className={styles.app}>
         <SearchForm onSearch={this.onSearch} />
-        {isLoading && <LoaderSpiner />}
         {images.length > 0 && (
           <Gallery
             images={images}
@@ -86,6 +99,8 @@ class App extends Component {
             // onMouseOver={this.onMouseOver}
           />
         )}
+
+        {isLoading && <LoaderSpiner />}
         {images.length > 0 && (
           <button
             type="button"

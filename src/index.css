@@ -21,3 +21,10 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+#loaders {
+  width: 50px;
+  position: fixed;
+  left: 47%;
+  bottom: 8%;
+}
