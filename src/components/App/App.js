@@ -20,19 +20,8 @@ class App extends Component {
     error: null,
   };
 
-  getSnapshotBeforeUpdate(prevProps, prevState) {
-    const { images } = this.state;
-    if (prevState.images !== images) {
-      const { scrollHeight, scrollTop, offsetHeight } = document.body;
-      const distanceFromBottom = scrollHeight - (scrollTop + offsetHeight);
-      return { shouldScroll: distanceFromBottom < 150 };
-    }
-
-    return null;
-  }
-
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { keyWord } = this.state;
+    const { keyWord, images } = this.state;
     if (prevState.keyWord !== keyWord) {
       /* eslint-disable-next-line */
       this.setState({
@@ -41,7 +30,7 @@ class App extends Component {
       this.fetchImages();
     }
 
-    if (snapshot && snapshot.shouldScroll) {
+    if (prevState.images !== images) {
       window.scrollTo({
         top: document.body.scrollHeight,
         behavior: 'smooth',
